@@ -1,0 +1,7 @@
+export const FIREBASE_API_KEY = 'AIzaSyAuPnGsg-GY6cY-JFK74O9GCYQZlz5fY9U'
+export const FIREBASE_AUTH_DOMAIN = 'wildcare-4c83f.firebaseapp.com'
+export const FIREBASE_PROJECT_ID = 'wildcare-4c83f'
+export const FIREBASE_STORAGE_BUCKET = 'wildcare-4c83f.appspot.com'
+export const FIREBASE_MESSAGING_SENDER_ID = '1074596143301'
+export const FIREBASE_APP_ID = '1:1074596143301:web:834429c73adaef127090ac'
+export const FIREBASE_MEASUREMENT_ID = 'G-CJCRP1CJSB'

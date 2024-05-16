@@ -5,6 +5,7 @@ const LayoutSidebar: React.FC = () => {
   return (
     <div className="flex relative">
       <Sidebar />
+
       <Outlet />
     </div>
   )

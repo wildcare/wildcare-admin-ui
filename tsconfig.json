@@ -9,11 +9,6 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "baseUrl": "./",
-    "paths": {
-      "@src/*": ["src/*"],
-      "@context/*": ["context/*"],
-      "@routes/*": ["routes/*"]
-    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",

@@ -22,10 +22,10 @@ const Sidebar: React.FC = () => {
   }
 
   const clasesContSidebar = `h-screen sticky poppins-regular z-10 top-0 fondoVerdeOscuro relative transition-all px-3 duration-500 ${
-    estaAbierto ? 'w-[14%] min-w-[160px]' : 'w-[65px] min-w-[65px]'
+    estaAbierto ? 'w-[15%] min-w-[160px]' : 'w-[65px] min-w-[65px]'
   }`
 
-  const clasesLogo = `flex mt-14 gap-1 md:text-[18px] px-2 ${
+  const clasesLogo = `flex mt-14 gap-1 md:text-[18px]   ${
     estaAbierto
       ? 'transition-all duration-1000 text-white'
       : 'text-transparent transition-all duration-300'
@@ -34,9 +34,9 @@ const Sidebar: React.FC = () => {
   return (
     <div className={clasesContSidebar}>
       <div className="h-[80%]">
-        <div className="z-30 top-4 px-1 flex absolute">
+        <div className="z-30 top-4  flex absolute">
           <button
-            className="text-white hover:bg-white/20 rounded-full p-1 transition duration-300"
+            className="text-white hover:bg-white/20 rounded-full  transition duration-300"
             onClick={alternarEstadoSidebar}
           >
             <Menu />
