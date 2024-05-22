@@ -5,7 +5,7 @@ import {
 } from 'react-router-dom'
 import LayoutSidebar from '../src/pages/layout/LayoutSidebar'
 
-import Home from '../src/pages/Home'
+import Home from '../src/pages/home'
 import Login from '../src/pages/Login'
 
 const router = createBrowserRouter(
