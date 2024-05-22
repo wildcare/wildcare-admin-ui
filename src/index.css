@@ -4,7 +4,8 @@
 @tailwind utilities;
 
 .verdeClaro {
-  color: #17c964;
+  /*color: #17c964;*/
+  color: rgba(5, 40, 20, 0.47)
 }
 .verdeMedio {
   color: #0e7239;
