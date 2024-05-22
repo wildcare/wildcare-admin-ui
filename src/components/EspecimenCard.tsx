@@ -4,7 +4,7 @@ interface EspecimenCardProps {
     region: string;
     nombre: string;
     descripcion: string;
-    imagen: string;
+    imagen: string | null;
     idUbicacion: string;
 }
 

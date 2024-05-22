@@ -3,8 +3,9 @@ import { API_WILDCARE } from '../consts/APIWildCare'
 import { Especimen } from '../types'
 import { useCallback, useEffect, useState } from 'react'
 import { Input, Select, SelectItem, Textarea, Button, Modal, ModalContent, Spinner, ModalHeader } from '@nextui-org/react'
-
+import FormData from 'form-data'
 import EspecimenCard from '../components/EspecimenCard'
+import { useNavigate } from 'react-router-dom'
 
 interface Region {
     region: string
@@ -15,7 +16,9 @@ type Regiones = Region[]
 
 const RegistrarEspecimenForm: React.FC = () => {
     const { obtenerTokenLocalStorage } = useAuth()
+    const navigate = useNavigate()
 
+    const [fileName, setFileName] = useState<string>('')
     const [imagen, setImagen] = useState<string | null>(null);
     const [regiones, setRegiones] = useState([] as string[])
     const [infoPais, setInfoPais] = useState([] as Regiones)
@@ -43,7 +46,7 @@ const RegistrarEspecimenForm: React.FC = () => {
             } else {
                 const urlImagen = URL.createObjectURL(file);
                 setImagen(urlImagen);
-                setearEspecimen('imagen', urlImagen);
+                setFileName(file.name);
             }
         }
     }
@@ -81,44 +84,52 @@ const RegistrarEspecimenForm: React.FC = () => {
         }
     };
 
-    async function registrarImagen(idEspecimen: string) {
-        if (imagen) {
-            const formData = new FormData();
-            formData.append('file', imagen);
+    async function createFormData(blobUrl: string, fileName: string) {
+        const response = await fetch(blobUrl);
+        const blob = await response.blob();
+        const formData = new FormData();
+        formData.append('file', blob, fileName);
 
-            setShowModal(true);
-            setEstadoPeticion(true);
-
-            fetch(API_WILDCARE + '/especimen/editarImagen?id=' + idEspecimen, {
-                method: 'POST',
-                body: formData,
-            })
-                .then((response) => response.text())
-                .then((data) => {
-                    setTimeout(() => {
-                        setEstadoPeticion(false);
-                        console.log('Success:', data)
-                    }, 2000)
-                })
-                .catch((error) => {
-                    console.error('Error:', error)
-                })
-                .finally(() => {
-                    setTimeout(() => {
-                        setShowModal(false);
-                    }, 4000);
-                });
-        }
+        return formData;
     }
 
-    const registrarEspecimen = async (event: React.FormEvent<HTMLFormElement>) => {
+    async function registrarImagen(idEspecimen: string) {
+        const file = imagen && fileName ? await createFormData(imagen, fileName) : null;
+        setShowModal(true);
+        setEstadoPeticion(true);
+
+        fetch(API_WILDCARE + '/especimenes/editarImagen?id=' + idEspecimen, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${obtenerTokenLocalStorage()}`,
+            },
+            body: file as any,
+        })
+            .then((response) => response.text())
+            .then((data) => {
+                setTimeout(() => {
+                    setEstadoPeticion(false);
+                    console.log('Success:', data)
+                }, 2000)
+            })
+            .catch((error) => {
+                console.error('Error:', error)
+            })
+            .finally(() => {
+                setTimeout(() => {
+                    setShowModal(false);
+                }, 4000);
+            });
+    }
+
+    async function registrarEspecimen(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        const token = obtenerTokenLocalStorage()
-        const response = await fetch(`${API_WILDCARE}/especimen/crear`, {
+        console.log(especimen)
+        await fetch(API_WILDCARE + '/especimenes/crear', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
+                Authorization: `Bearer ${obtenerTokenLocalStorage()}`,
             },
             body: JSON.stringify(especimen as Especimen)
         })
@@ -126,7 +137,6 @@ const RegistrarEspecimenForm: React.FC = () => {
             .then((data) => {
                 registrarImagen(data)
             })
-
     }
 
     return (
@@ -157,7 +167,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                                 "dark:group-data-[focus=true]:bg-default/60",
                                 "!cursor-text",
                             ],
-                        }} name="nombre" value={especimen.nombre} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} onKeyDown={handleName} type="text" label="Nombre" size='md' placeholder="Ingrese nombre del espécimen" required />
+                        }} name="nombre" value={especimen.nombre} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} onKeyDown={handleName} type="text" label="Nombre" size='md' placeholder="Ingrese nombre del espécimen" isRequired />
 
                         <Input className="poppins-semibold" classNames={{
                             input: [
@@ -176,7 +186,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                                 "dark:group-data-[focus=true]:bg-default/60",
                                 "!cursor-text",
                             ],
-                        }} name="idUbicacion" value={especimen.idUbicacion} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} type="text" label="ID" size='md' placeholder="Ingrese ID de ubicación del espécimen" required />
+                        }} name="idUbicacion" value={especimen.idUbicacion} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} type="text" label="ID" size='md' placeholder="Ingrese ID de ubicación del espécimen" isRequired />
 
                         <Select className="poppins-semibold" classNames={{
                             trigger: [
@@ -185,7 +195,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                             ],
                             innerWrapper: "bg-transparent"
 
-                        }} name="region" value={especimen.region} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} size='md' label="Región" placeholder="Seleccione una región"
+                        }} name="region" value={especimen.region} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} size='md' label="Región" placeholder="Seleccione una región" isRequired
                         >
                             {regiones.map((region) => (
                                 <SelectItem key={region} value={region}>
@@ -201,7 +211,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                             ],
                             innerWrapper: "bg-transparent"
 
-                        }} name="ciudad" value={especimen.ciudad} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} size='md' label="Ciudad" placeholder="Seleccione una ciudad"
+                        }} name="ciudad" value={especimen.ciudad} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} size='md' label="Ciudad" placeholder="Seleccione una ciudad" isRequired
                         >
                             {(obtenerComunas() || []).map((comuna) => (
                                 <SelectItem key={comuna} value={comuna}>
@@ -227,7 +237,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                                 "dark:group-data-[focus=true]:bg-default/60",
                                 "!cursor-text",
                             ],
-                        }} name="descripcion" value={especimen.descripcion} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} label="Descripción" placeholder="Ingrese descripción del espécimen" minRows={3} />
+                        }} name="descripcion" value={especimen.descripcion} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} label="Descripción" placeholder="Ingrese descripción del espécimen" minRows={3} isRequired />
 
                         <div className="flex items-center justify-center w-full">
                             <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-34 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-white dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-200 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
@@ -238,7 +248,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                                     <p className="poppins-regular mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="poppins-semibold">Click para subir</span> o arrastra y suelta</p>
                                     <p className="poppins-semibold text-xs text-gray-500 dark:text-gray-400">PNG, JPG o JPEG (MAX. 2MB)</p>
                                 </div>
-                                <input id="dropzone-file" type="file" accept=".png, .jpg, .jpeg" className="hidden" onChange={setearImagen} />
+                                <input id="dropzone-file" type="file" accept=".png, .jpg, .jpeg" className="hidden" onChange={setearImagen} required />
                             </label>
                         </div>
 
@@ -250,7 +260,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                     </form>
 
                     <div className="w-1/2 flex items-center justify-center h-screen" id="cardNuevoEspecimen">
-                        <EspecimenCard region={especimen.region} nombre={especimen.nombre} descripcion={especimen.descripcion} imagen={especimen.imagen} idUbicacion={especimen.idUbicacion} />
+                        <EspecimenCard region={especimen.region} nombre={especimen.nombre} descripcion={especimen.descripcion} imagen={imagen} idUbicacion={especimen.idUbicacion} />
                     </div>
 
                 </div>
@@ -266,7 +276,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                                 <p className="poppins-medium mt-2">Registrando...</p>
                             </>
                         ) : (
-                            <p className="poppins-medium">Listo!</p>
+                            <p className="poppins-medium">Espécimen registrado exitosamente</p>
                         )}
                     </div>
                 </ModalContent>
