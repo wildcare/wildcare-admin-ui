@@ -3,9 +3,7 @@ import { API_WILDCARE } from '../consts/APIWildCare'
 import { Especimen } from '../types'
 import { useCallback, useEffect, useState } from 'react'
 import { Input, Select, SelectItem, Textarea, Button, Modal, ModalContent, Spinner, ModalHeader } from '@nextui-org/react'
-import FormData from 'form-data'
 import EspecimenCard from '../components/EspecimenCard'
-import { useNavigate } from 'react-router-dom'
 
 interface Region {
     region: string
@@ -16,19 +14,48 @@ type Regiones = Region[]
 
 const RegistrarEspecimenForm: React.FC = () => {
     const { obtenerTokenLocalStorage } = useAuth()
-    const navigate = useNavigate()
 
     const [fileName, setFileName] = useState<string>('')
     const [imagen, setImagen] = useState<string | null>(null);
     const [regiones, setRegiones] = useState([] as string[])
     const [infoPais, setInfoPais] = useState([] as Regiones)
-    const [especimen, setEspecimen] = useState<Especimen>(
-        {} as Especimen
-    )
+    const [especimen, setEspecimen] = useState<Especimen>({} as Especimen)
 
     const [showModal, setShowModal] = useState(false);
     const [estadoPeticion, setEstadoPeticion] = useState(false);
 
+    const inputClasses = {
+        input: [
+            "bg-transparent",
+            "text-black/90 dark:text-white/90",
+        ],
+        innerWrapper: "bg-transparent",
+        inputWrapper: [
+            "bg-white",
+            "dark:bg-default/60",
+            "backdrop-blur-xl",
+            "backdrop-saturate-200",
+            "hover:bg-default-200/70",
+            "dark:hover:bg-default/70",
+            "group-data-[focus=true]:bg-white",
+            "dark:group-data-[focus=true]:bg-default/60",
+            "!cursor-text",
+        ],
+    };
+
+    const selectClasses = {
+        trigger: [
+            "bg-white",
+            "text-black/90 dark:text-white/90",
+        ],
+        innerWrapper: "bg-transparent",
+    };
+
+    /**
+     * Establece el valor de una etiqueta específica en el objeto de estado `especimen`.
+     * @param {string} label - La etiqueta del valor a establecer.
+     * @param {string | number} value - El valor a establecer.
+     */
     const setearEspecimen = (label: string, value: string | number) => {
         setEspecimen((prev) => ({ ...prev, [label]: value }))
         console.log(especimen)
@@ -51,34 +78,49 @@ const RegistrarEspecimenForm: React.FC = () => {
         }
     }
 
-    async function consultarRegiones() {
+    /**
+     * Consulta la lista de regiones desde una API remota y establece la información de las regiones y el país en el estado del componente.
+     * @returns {Promise<void>} Una promesa que se resuelve cuando se han establecido las regiones y la información del país.
+     */
+    async function consultarRegiones(): Promise<void> {
         return fetch(
             'https://gist.githubusercontent.com/juanbrujo/0fd2f4d126b3ce5a95a7dd1f28b3d8dd/raw/b8575eb82dce974fd2647f46819a7568278396bd/comunas-regiones.json'
         )
             .then((response) => response.json())
             .then((data) => {
-                const pais = data.regiones
-                const regiones = [] as string[]
+                const pais = data.regiones;
+                const regiones = [] as string[];
                 pais.map((region: { region: string }) => {
-                    regiones.push(region.region)
-                })
-                setRegiones(regiones)
-                setInfoPais(pais)
+                    regiones.push(region.region);
+                });
+                setRegiones(regiones);
+                setInfoPais(pais);
             })
-            .catch((error) => console.error(error))
+            .catch((error) => console.error(error));
     }
 
     useEffect(() => {
         consultarRegiones()
     }, [])
 
+    /**
+     * Recupera la lista de comunas basada en la región seleccionada del espécimen.
+     * @returns Un array de comunas.
+     */
     const obtenerComunas = useCallback(() => {
         const comunas = infoPais.find((pais) => pais.region === especimen.region)?.comunas
         return comunas
     }, [especimen.region, infoPais])
 
     const handleName = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        const regex = /^[a-zA-Z\s-áéíóúÁÉÍÓÚ]*$/; // Solo permite letras y espacios
+        const regex = /^[a-zA-Z\s-áéíóúÁÉÍÓÚ]*$/;
+        if (!regex.test(event.key)) {
+            event.preventDefault();
+        }
+    };
+
+    const handleID = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        const regex = /^[a-zA-Z0-9\s-áéíóúÁÉÍÓÚ]*$/;
         if (!regex.test(event.key)) {
             event.preventDefault();
         }
@@ -95,8 +137,6 @@ const RegistrarEspecimenForm: React.FC = () => {
 
     async function registrarImagen(idEspecimen: string) {
         const file = imagen && fileName ? await createFormData(imagen, fileName) : null;
-        setShowModal(true);
-        setEstadoPeticion(true);
 
         fetch(API_WILDCARE + '/especimenes/editarImagen?id=' + idEspecimen, {
             method: 'POST',
@@ -119,12 +159,23 @@ const RegistrarEspecimenForm: React.FC = () => {
                 setTimeout(() => {
                     setShowModal(false);
                 }, 4000);
+                setTimeout(() => {
+                    window.location.href = '/home';
+                }, 5500);
             });
     }
 
+    /**
+     * Registra un espécimen enviando una solicitud POST a la API.
+     * @param event - El evento de envío del formulario.
+     * @returns Una promesa que se resuelve con el texto de la respuesta.
+     */
     async function registrarEspecimen(event: React.FormEvent<HTMLFormElement>) {
         event.preventDefault();
         console.log(especimen)
+
+        setShowModal(true);
+        setEstadoPeticion(true);
         await fetch(API_WILDCARE + '/especimenes/crear', {
             method: 'POST',
             headers: {
@@ -144,58 +195,49 @@ const RegistrarEspecimenForm: React.FC = () => {
         <>
 
             <div className="w-full h-full bg-gray-100">
-                <div className="flex gap-40 mx-24 mt-8">
+                <div className="flex flex-col md:flex-row gap-4 md:gap-40 mx-4 md:mx-24 mt-8">
 
-                    <form className="w-1/2 space-y-5 mb-8" onSubmit={registrarEspecimen}>
+                    <form className="w-full md:w-1/2 space-y-5 mb-8" onSubmit={registrarEspecimen}>
 
                         <h1 className="poppins-medium verdeClaro text-2xl mb-10">Registrar nuevo espécimen</h1>
 
-                        <Input className="poppins-semibold" classNames={{
-                            input: [
-                                "bg-transparent",
-                                "text-black/90 dark:text-white/90",
-                            ],
-                            innerWrapper: "bg-transparent",
-                            inputWrapper: [
-                                "bg-white",
-                                "dark:bg-default/60",
-                                "backdrop-blur-xl",
-                                "backdrop-saturate-200",
-                                "hover:bg-default-200/70",
-                                "dark:hover:bg-default/70",
-                                "group-data-[focus=true]:bg-white",
-                                "dark:group-data-[focus=true]:bg-default/60",
-                                "!cursor-text",
-                            ],
-                        }} name="nombre" value={especimen.nombre} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} onKeyDown={handleName} type="text" label="Nombre" size='md' placeholder="Ingrese nombre del espécimen" isRequired />
+                        <Input
+                            className="poppins-semibold"
+                            classNames={inputClasses}
+                            name="nombre"
+                            value={especimen.nombre}
+                            onChange={(e) => setearEspecimen(e.target.name, e.target.value)}
+                            onKeyDown={handleName}
+                            type="text"
+                            label="Nombre"
+                            size='md'
+                            placeholder="Ingrese nombre del espécimen"
+                            isRequired
+                        />
 
-                        <Input className="poppins-semibold" classNames={{
-                            input: [
-                                "bg-transparent",
-                                "text-black/90 dark:text-white/90",
-                            ],
-                            innerWrapper: "bg-transparent",
-                            inputWrapper: [
-                                "bg-white",
-                                "dark:bg-default/60",
-                                "backdrop-blur-xl",
-                                "backdrop-saturate-200",
-                                "hover:bg-default-200/70",
-                                "dark:hover:bg-default/70",
-                                "group-data-[focus=true]:bg-white",
-                                "dark:group-data-[focus=true]:bg-default/60",
-                                "!cursor-text",
-                            ],
-                        }} name="idUbicacion" value={especimen.idUbicacion} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} type="text" label="ID" size='md' placeholder="Ingrese ID de ubicación del espécimen" isRequired />
+                        <Input
+                            className="poppins-semibold"
+                            classNames={inputClasses}
+                            name="idUbicacion"
+                            value={especimen.idUbicacion}
+                            onChange={(e) => setearEspecimen(e.target.name, e.target.value)}
+                            onKeyDown={handleID}
+                            type="text"
+                            label="ID"
+                            size='md'
+                            placeholder="Ingrese ID de ubicación del espécimen"
+                            isRequired
+                        />
 
-                        <Select className="poppins-semibold" classNames={{
-                            trigger: [
-                                "bg-white",
-                                "text-black/90 dark:text-white/90",
-                            ],
-                            innerWrapper: "bg-transparent"
-
-                        }} name="region" value={especimen.region} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} size='md' label="Región" placeholder="Seleccione una región" isRequired
+                        <Select
+                            className="poppins-semibold"
+                            classNames={selectClasses}
+                            name="region"
+                            value={especimen.region} onChange={(e) => setearEspecimen(e.target.name, e.target.value)}
+                            size='md'
+                            label="Región"
+                            placeholder="Seleccione una región"
+                            isRequired
                         >
                             {regiones.map((region) => (
                                 <SelectItem key={region} value={region}>
@@ -204,14 +246,16 @@ const RegistrarEspecimenForm: React.FC = () => {
                             ))}
                         </Select>
 
-                        <Select className="poppins-semibold" classNames={{
-                            trigger: [
-                                "bg-white",
-                                "text-black/90 dark:text-white/90",
-                            ],
-                            innerWrapper: "bg-transparent"
-
-                        }} name="ciudad" value={especimen.ciudad} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} size='md' label="Ciudad" placeholder="Seleccione una ciudad" isRequired
+                        <Select
+                            className="poppins-semibold"
+                            classNames={selectClasses}
+                            name="ciudad"
+                            value={especimen.ciudad}
+                            onChange={(e) => setearEspecimen(e.target.name, e.target.value)}
+                            size='md'
+                            label="Ciudad"
+                            placeholder="Seleccione una ciudad"
+                            isRequired
                         >
                             {(obtenerComunas() || []).map((comuna) => (
                                 <SelectItem key={comuna} value={comuna}>
@@ -220,24 +264,17 @@ const RegistrarEspecimenForm: React.FC = () => {
                             ))}
                         </Select>
 
-                        <Textarea className="poppins-semibold" classNames={{
-                            input: [
-                                "bg-transparent",
-                                "text-black/90 dark:text-white/90",
-                            ],
-                            innerWrapper: "bg-transparent",
-                            inputWrapper: [
-                                "bg-white",
-                                "dark:bg-default/60",
-                                "backdrop-blur-xl",
-                                "backdrop-saturate-200",
-                                "hover:bg-default-200/70",
-                                "dark:hover:bg-default/70",
-                                "group-data-[focus=true]:bg-white",
-                                "dark:group-data-[focus=true]:bg-default/60",
-                                "!cursor-text",
-                            ],
-                        }} name="descripcion" value={especimen.descripcion} onChange={(e) => setearEspecimen(e.target.name, e.target.value)} label="Descripción" placeholder="Ingrese descripción del espécimen" minRows={3} isRequired />
+                        <Textarea
+                            className="poppins-semibold"
+                            classNames={inputClasses}
+                            name="descripcion"
+                            value={especimen.descripcion}
+                            onChange={(e) => setearEspecimen(e.target.name, e.target.value)}
+                            label="Descripción"
+                            placeholder="Ingrese descripción del espécimen"
+                            minRows={3}
+                            isRequired
+                        />
 
                         <div className="flex items-center justify-center w-full">
                             <label htmlFor="dropzone-file" className="flex flex-col items-center justify-center w-full h-34 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-white dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-200 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
@@ -252,15 +289,26 @@ const RegistrarEspecimenForm: React.FC = () => {
                             </label>
                         </div>
 
-                        <Button className="poppins-medium text-white w-full" size='lg' color="success" type='submit'>
+                        <Button
+                            className="poppins-medium text-white w-full"
+                            size='lg'
+                            color="success"
+                            type='submit'
+                        >
                             Registrar nuevo espécimen
                         </Button>
 
 
                     </form>
 
-                    <div className="w-1/2 flex items-center justify-center h-screen" id="cardNuevoEspecimen">
-                        <EspecimenCard region={especimen.region} nombre={especimen.nombre} descripcion={especimen.descripcion} imagen={imagen} idUbicacion={especimen.idUbicacion} />
+                    <div className="w-full md:w-1/2 min-w-[300px] flex items-center justify-center h-screen" id="cardNuevoEspecimen">
+                        <EspecimenCard
+                            region={especimen.region}
+                            nombre={especimen.nombre}
+                            descripcion={especimen.descripcion}
+                            imagen={imagen}
+                            idUbicacion={especimen.idUbicacion}
+                        />
                     </div>
 
                 </div>
@@ -273,7 +321,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                         {estadoPeticion ? (
                             <>
                                 <Spinner size="lg" />
-                                <p className="poppins-medium mt-2">Registrando...</p>
+                                <p className="poppins-medium mt-2">Registrando espécimen...</p>
                             </>
                         ) : (
                             <p className="poppins-medium">Espécimen registrado exitosamente</p>
