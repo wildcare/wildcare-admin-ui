@@ -1,10 +1,10 @@
 import { useAuth } from '../../context/auth/useAuth'
 import { API_WILDCARE } from '../consts/APIWildCare'
 import { useEffect, useState } from 'react'
-import { User, Especie, ListaEspecies } from '../types'
+import { Especie, ListaEspecies } from '../types'
 function Home() {
   const { obtenerTokenLocalStorage } = useAuth()
-  const [usuario, setUsuario] = useState({} as User)
+  const usuario = 'Matias'
   const [especies, setEspecies] = useState([] as ListaEspecies)
 
   async function fetchData() {
@@ -25,41 +25,34 @@ function Home() {
   }, [])
 
   return (
-    <div className=" w-full h-full ">
+    <div className=" w-full h-full poppins-regular  ">
+      <h2 className="text-xl  text-gray-800 mt-5 ml-10 verdeMedio ">
+        Bienvenido, {usuario}
+      </h2>
+      <h2 className="text-md text-gray-800   ml-10 mb-8 verdeMedio ">
+        Especies en peligro de extinción
+      </h2>
 
-      <h2 style={{ color: 'gray', fontSize:'1.5em', textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)', marginLeft: '20px'}}>Bienvenido, {usuario.nombreUsuario}</h2>
-      {especies.map((especie: Especie) => {
-        const divStyle: React.CSSProperties = {
-          width: '1300px',
-          height: '200px',
-          backgroundImage: `linear-gradient(to right, rgba(5, 40, 20, 0.89), rgba(5, 40, 20, 0.66), rgba(0, 128, 0, 0)), url(${especie.imagen})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          display: 'flex',
-          justifyContent: 'left',
-          alignItems: 'center',
-          margin: 'auto',
-          border: '5px solid #000',
-          marginTop: '10px',
-          marginBottom: '10px'
-        };
+      <div className="mx-10 rounded-lg overflow-hidden flex flex-col gap-[1px]">
+        {especies.map((especie: Especie) => {
+          const divStyle: React.CSSProperties = {
+            backgroundImage: `linear-gradient(90deg, rgba(5, 40, 20, 0.89) 0%, rgba(5, 40, 20, 0.66) 25%, rgba(30, 31, 24, 0.00) 56.5%), url(${especie.imagen})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat',
+          }
 
-        const h1Style: React.CSSProperties = {
-          color: 'white',
-          fontSize: '1.5em',
-          textShadow: '2px 2px 4px rgba(0, 0, 0, 0.5)',
-          alignItems: 'left',
-          marginLeft: '20px'
-        };
-
-
-        return (         
-          <div key={especie.id} className="flex flex-row justify-between p-4" style={divStyle}>
-            <h1 style={h1Style} >{especie.nombre}</h1>
-          </div>
-        )
-      })}
+          return (
+            <div
+              key={especie.id}
+              className="flex flex-row justify-between h-[130px] flex-wrap items-center gap-3  "
+              style={divStyle}
+            >
+              <h1 className="text-white ml-20 text-[22px]">{especie.nombre}</h1>
+            </div>
+          )
+        })}
+      </div>
     </div>
   )
 }
