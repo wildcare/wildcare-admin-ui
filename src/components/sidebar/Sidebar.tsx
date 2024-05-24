@@ -4,6 +4,7 @@ import Deer from '../../assets/icons/Deer'
 import Binoculars from '../../assets/icons/Binoculars'
 import Menu from '../../assets/icons/Menu'
 import Profile from '../../assets/icons/Profile'
+import Add from '../../assets/icons/Add'
 
 const Sidebar: React.FC = () => {
   const [estaAbierto, setEstadoSidebar] = useState(false)
@@ -73,6 +74,13 @@ const Sidebar: React.FC = () => {
             icono={<Profile />}
             texto="Perfil"
             url="/Perfil"
+            estaAbierto={estaAbierto}
+            cambiarBotonActivo={setBotonActivo}
+          />
+          <BotonSidebar
+            icono={<Add />}
+            texto="Nuevo"
+            url="/registrar-especimen"
             estaAbierto={estaAbierto}
             cambiarBotonActivo={setBotonActivo}
           />

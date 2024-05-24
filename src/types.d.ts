@@ -13,4 +13,14 @@ export interface Especie {
   imagen: null
 }
 
+export interface Especimen {
+  id?: number
+  nombre: string
+  descripcion: string
+  imagen: string
+  idUbicacion: string
+  region: string
+  ciudad: string
+}
+
 export type ListaEspecies = Especie[]
