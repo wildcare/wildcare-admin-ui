@@ -7,6 +7,7 @@ import LayoutSidebar from '../src/pages/layout/LayoutSidebar'
 import Home from '../src/pages/home'
 import Login from '../src/pages/Login'
 import RegistrarEspecimenForm from '../src/pages/RegistrarEspecimenForm'
+import Avistamientos from '../src/pages/Avistamientos'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -14,6 +15,7 @@ const router = createBrowserRouter(
       <Route element={<LayoutSidebar />}>
         <Route path="/home" element={<Home />} />
         <Route path="/registrar-especimen" element={<RegistrarEspecimenForm />} />
+        <Route path="/avistamientos" element={<Avistamientos />} />
       </Route>
       <Route path="/*" element={<Login />} />
       <Route path="/login" element={<Login />} />
