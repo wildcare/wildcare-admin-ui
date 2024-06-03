@@ -8,12 +8,14 @@ import Home from '../src/pages/home'
 import Login from '../src/pages/Login'
 import RegistrarEspecimenForm from '../src/pages/RegistrarEspecimenForm'
 import Avistamientos from '../src/pages/Avistamientos'
+import ListarEspecimenes from '../src/pages/ListarEspecimenes'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route>
       <Route element={<LayoutSidebar />}>
         <Route path="/home" element={<Home />} />
+        <Route path="/home/listar_especimenes" element={<ListarEspecimenes />} />
         <Route path="/registrar-especimen" element={<RegistrarEspecimenForm />} />
         <Route path="/avistamientos" element={<Avistamientos />} />
       </Route>

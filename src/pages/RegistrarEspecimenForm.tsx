@@ -118,8 +118,11 @@ const RegistrarEspecimenForm: React.FC = () => {
     }
 
     useEffect(() => {
-        consultarRegiones(),
-            fetchData()
+        fetchData()
+        consultarRegiones()
+        setTimeout(() => {
+            window.scrollTo(0, 0);
+        }, 100);
     }, [])
 
     /**
@@ -212,7 +215,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                     <h2 className="poppins-medium mt-2">Cargando...</h2>
                 </div>
             ) : (
-                <div className="w-full h-full bg-gray-100">
+                <div className="w-full min-h-screen bg-gray-100">
                     <div className="flex flex-col md:flex-row gap-4 md:gap-40 mx-4 md:mx-24 mt-8">
 
                         <form className="w-full md:w-1/2 space-y-5 mb-8" onSubmit={registrarEspecimen}>
@@ -329,6 +332,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                                 descripcion={especimen.descripcion}
                                 imagen={imagen}
                                 idUbicacion={especimen.idUbicacion}
+                                showDropdown={false}
                             />
                         </div>
 
