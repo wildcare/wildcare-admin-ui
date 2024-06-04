@@ -14,7 +14,7 @@ export interface Especie {
 }
 
 export interface Especimen {
-  id?: number
+  id?: string
   nombre: string
   descripcion: string
   imagen: string
