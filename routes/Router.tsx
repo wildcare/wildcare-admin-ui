@@ -16,7 +16,8 @@ const router = createBrowserRouter(
       <Route element={<LayoutSidebar />}>
         <Route path="/home" element={<Home />} />
         <Route path="/home/listar_especimenes" element={<ListarEspecimenes />} />
-        <Route path="/registrar-especimen" element={<RegistrarEspecimenForm />} />
+        <Route path="/home/editar_especimen" element={<RegistrarEspecimenForm isEditing={true} />} />
+        <Route path="/registrar-especimen" element={<RegistrarEspecimenForm isEditing={false} />} />
         <Route path="/avistamientos" element={<Avistamientos />} />
       </Route>
       <Route path="/*" element={<Login />} />

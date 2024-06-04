@@ -8,9 +8,11 @@ interface EspecimenCardProps {
     idUbicacion: string;
     showDropdown?: boolean;
     showButton?: boolean;
+    onEditar?: () => void;
+    onEliminar?: () => void;
 }
 
-const EspecimenCard: React.FC<EspecimenCardProps> = ({ region, nombre, descripcion, imagen, idUbicacion, showDropdown, showButton }) => {
+const EspecimenCard: React.FC<EspecimenCardProps> = ({ region, nombre, descripcion, imagen, idUbicacion, showDropdown, showButton, onEditar, onEliminar }) => {
     const regionDefault = "Región";
     const nombreDefault = "NOMBRE";
     const descripcionDefault = "Descripción";
@@ -18,13 +20,13 @@ const EspecimenCard: React.FC<EspecimenCardProps> = ({ region, nombre, descripci
     const imagenDefault = "https://fakeimg.pl/600x400?text=Imagen";
 
     return (
-        <Card className="py-2 min-w-xs max-w-xs h-fit max-h-[520px] min-h-[470px] overflow-auto relative">
+        <Card className="py-2 min-w-xs max-w-xs h-fit max-h-[520px] overflow-auto relative">
             <CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
                 <div className="flex justify-between items-center w-full">
                     <div>
                         <p className="poppins-medium text-gray-400 mb-2 h-[3rem] pr-4">{region || regionDefault}</p>
                         <h1 className="poppins-semibold text-3xl mb-4">{(nombre ? nombre.toUpperCase() : nombreDefault)}</h1>
-                        <h4 className="poppins-medium text-gray-600 text-sm text-justify mb-4">{descripcion || descripcionDefault}</h4>
+                        <h4 className="poppins-medium text-gray-600 text-sm text-justify mb-4 h-[5rem]">{descripcion || descripcionDefault}</h4>
                     </div>
                     {showDropdown && (
                         <div className="absolute top-2 right-0 p-1">
@@ -38,8 +40,8 @@ const EspecimenCard: React.FC<EspecimenCardProps> = ({ region, nombre, descripci
                                     </Button>
                                 </DropdownTrigger>
                                 <DropdownMenu className="poppins-semibold">
-                                    <DropdownItem>Editar</DropdownItem>
-                                    <DropdownItem>Eliminar</DropdownItem>
+                                    <DropdownItem onClick={onEditar}>Editar</DropdownItem>
+                                    <DropdownItem onClick={onEliminar}>Eliminar</DropdownItem>
                                 </DropdownMenu>
                             </Dropdown>
                         </div>
@@ -54,7 +56,7 @@ const EspecimenCard: React.FC<EspecimenCardProps> = ({ region, nombre, descripci
                 />
                 <p className="poppins-medium text-gray-400 text-center text-sm mt-2">ID: {idUbicacion || idUbicacionDefault}</p>
                 {showButton && (
-                    <Button className="mt-2 poppins-medium text-white" color="success" >Rastrear</Button>
+                    <Button className="mt-4 poppins-medium text-white" color="success" >Rastrear</Button>
                 )}
             </CardBody>
 

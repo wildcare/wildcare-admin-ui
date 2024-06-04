@@ -4,7 +4,8 @@ import { Especimen } from '../types'
 import { useCallback, useEffect, useState } from 'react'
 import { Input, Select, SelectItem, Textarea, Button, Modal, ModalContent, Spinner, ModalHeader } from '@nextui-org/react'
 import EspecimenCard from '../components/EspecimenCard'
-import { Especie, ListaEspecies } from '../types'
+import { ListaEspecies } from '../types'
+import { useLocation } from 'react-router-dom';
 
 interface Region {
     region: string
@@ -13,7 +14,13 @@ interface Region {
 
 type Regiones = Region[]
 
-const RegistrarEspecimenForm: React.FC = () => {
+interface RegistrarEspecimenFormProps {
+    isEditing: boolean;
+}
+
+
+const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({ isEditing }) => {
+    const [reloadKey, setReloadKey] = useState(0)
     const [isLoading, setIsLoading] = useState(true);
     const { obtenerTokenLocalStorage } = useAuth()
     const [especies, setEspecies] = useState([] as ListaEspecies)
@@ -23,9 +30,12 @@ const RegistrarEspecimenForm: React.FC = () => {
     const [regiones, setRegiones] = useState([] as string[])
     const [infoPais, setInfoPais] = useState([] as Regiones)
     const [especimen, setEspecimen] = useState<Especimen>({} as Especimen)
+    const [imagenModificada, setImagenModificada] = useState(false);
 
     const [showModal, setShowModal] = useState(false);
     const [estadoPeticion, setEstadoPeticion] = useState(false);
+
+    const location = useLocation();
 
     const inputClasses = {
         input: [
@@ -92,6 +102,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                 const urlImagen = URL.createObjectURL(file);
                 setImagen(urlImagen);
                 setFileName(file.name);
+                setImagenModificada(true);
             }
         }
     }
@@ -120,10 +131,20 @@ const RegistrarEspecimenForm: React.FC = () => {
     useEffect(() => {
         fetchData()
         consultarRegiones()
+
+        if (location.state) {
+            const { especimenObtenido } = location.state as { especimenObtenido: Especimen }
+            setEspecimen(especimenObtenido)
+            setImagen(especimenObtenido.imagen)
+        } else {
+            setReloadKey(prevKey => prevKey + 1);
+            setEspecimen({} as Especimen);
+            setImagen(null);
+        }
         setTimeout(() => {
             window.scrollTo(0, 0);
         }, 100);
-    }, [])
+    }, [location.pathname])
 
     /**
      * Recupera la lista de comunas basada en la región seleccionada del espécimen.
@@ -201,7 +222,20 @@ const RegistrarEspecimenForm: React.FC = () => {
         })
             .then((response) => response.text())
             .then((data) => {
-                registrarImagen(data)
+                if (imagenModificada) {
+                    registrarImagen(data)
+                } else {
+                    setTimeout(() => {
+                        setEstadoPeticion(false);
+                        console.log('Success:', data)
+                    }, 2000)
+                    setTimeout(() => {
+                        setShowModal(false);
+                    }, 4000);
+                    setTimeout(() => {
+                        window.location.href = '/home';
+                    }, 5500);
+                }
             })
     }
 
@@ -218,15 +252,18 @@ const RegistrarEspecimenForm: React.FC = () => {
                 <div className="w-full min-h-screen bg-gray-100">
                     <div className="flex flex-col md:flex-row gap-4 md:gap-40 mx-4 md:mx-24 mt-8">
 
-                        <form className="w-full md:w-1/2 space-y-5 mb-8" onSubmit={registrarEspecimen}>
+                        <form className="w-full md:w-1/2 space-y-5 mb-8" onSubmit={registrarEspecimen} key={reloadKey}>
 
-                            <h1 className="poppins-medium verdeClaro text-2xl mb-10">Registrar nuevo espécimen</h1>
+                            <h1 className="poppins-medium verdeClaro text-2xl mb-8">
+                                {isEditing ? 'Editar espécimen' : 'Registrar nuevo espécimen'}
+                            </h1>
 
                             <Select
                                 className="poppins-semibold"
                                 classNames={selectClasses}
                                 name="nombre"
                                 value={especimen.nombre} onChange={(e) => setearEspecimen(e.target.name, e.target.value)}
+                                defaultSelectedKeys={especimen && especimen.nombre ? [especimen.nombre] : []}
                                 size='md'
                                 label="Nombre"
                                 placeholder="Seleccione el nombre del espécimen"
@@ -257,7 +294,9 @@ const RegistrarEspecimenForm: React.FC = () => {
                                 className="poppins-semibold"
                                 classNames={selectClasses}
                                 name="region"
-                                value={especimen.region} onChange={(e) => setearEspecimen(e.target.name, e.target.value)}
+                                value={especimen.region} 
+                                onChange={(e) => setearEspecimen(e.target.name, e.target.value)}
+                                defaultSelectedKeys={especimen && especimen.region ? [especimen.region] : []}
                                 size='md'
                                 label="Región"
                                 placeholder="Seleccione una región"
@@ -276,6 +315,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                                 name="ciudad"
                                 value={especimen.ciudad}
                                 onChange={(e) => setearEspecimen(e.target.name, e.target.value)}
+                                defaultSelectedKeys={especimen && especimen.ciudad ? [especimen.ciudad] : []}
                                 size='md'
                                 label="Ciudad"
                                 placeholder="Seleccione una ciudad"
@@ -309,7 +349,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                                         <p className="poppins-regular mb-2 text-sm text-gray-500 dark:text-gray-400"><span className="poppins-semibold">Click para subir</span> o arrastra y suelta</p>
                                         <p className="poppins-semibold text-xs text-gray-500 dark:text-gray-400">PNG, JPG o JPEG (MAX. 2MB)</p>
                                     </div>
-                                    <input id="dropzone-file" type="file" accept=".png, .jpg, .jpeg" className="hidden" onChange={setearImagen} required />
+                                    <input id="dropzone-file" type="file" accept=".png, .jpg, .jpeg" className="hidden" onChange={setearImagen} />
                                 </label>
                             </div>
 
@@ -319,7 +359,7 @@ const RegistrarEspecimenForm: React.FC = () => {
                                 color="success"
                                 type='submit'
                             >
-                                Registrar nuevo espécimen
+                                {isEditing ? 'Guardar espécimen' : 'Registrar espécimen'}
                             </Button>
 
 

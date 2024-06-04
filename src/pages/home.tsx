@@ -13,6 +13,7 @@ function Home() {
   const [loading, setLoading] = useState(false);
 
   async function fetchData() {
+    setLoading(true)
     await fetch(API_WILDCARE + '/especies/obtenerTodos', {
       method: 'GET',
       headers: {
@@ -24,33 +25,17 @@ function Home() {
       .then((data) => {
         setEspecies(data as unknown as ListaEspecies)
       })
+      .finally(() => setLoading(false))
   }
   useEffect(() => {
     fetchData()
   }, [])
 
-  const obtenerEspecimenes = async (nombreEspecie: string) => {
-    setLoading(true);
-    await fetch(`http://localhost:3000/especimenes/obtenerPorNombre?nombre=${nombreEspecie}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${obtenerTokenLocalStorage()}`,
-      },
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log(data);
-        navigate('/home/listar_especimenes', { state: { especimenes: data } });
-      })
-      .finally(() => setLoading(false));
-  };
-
   return (
     <>
       <div className=" w-full h-full poppins-regular  ">
         {loading ? (
-          <div className="w-screen h-screen flex items-center justify-center gap-4">
+          <div className="w-full h-screen flex items-center justify-center gap-4">
             <Spinner color="success" />
             <h2 className="poppins-medium mt-2">Cargando...</h2>
           </div>
@@ -75,7 +60,7 @@ function Home() {
                 return (
                   <div
                     key={especie.id}
-                    onClick={() => obtenerEspecimenes(especie.nombre)}
+                    onClick={() => navigate('/home/listar_especimenes', { state: { nombreEspecimen: especie.nombre } })}
                     className="flex flex-row justify-between h-[130px] flex-wrap items-center gap-3 cursor-pointer transition-all duration-200 ease-in-out transform hover:scale-105 hover:shadow-lg"
                     style={divStyle}
                   >
