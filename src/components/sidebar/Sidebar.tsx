@@ -3,7 +3,6 @@ import BotonSidebar from './BotonSidebar'
 import Deer from '../../assets/icons/Deer'
 import Binoculars from '../../assets/icons/Binoculars'
 import Menu from '../../assets/icons/Menu'
-import Profile from '../../assets/icons/Profile'
 import Add from '../../assets/icons/Add'
 
 const Sidebar: React.FC = () => {
@@ -67,13 +66,6 @@ const Sidebar: React.FC = () => {
             icono={<Binoculars />}
             texto="Avistamientos"
             url="/avistamientos"
-            estaAbierto={estaAbierto}
-            cambiarBotonActivo={setBotonActivo}
-          />
-          <BotonSidebar
-            icono={<Profile />}
-            texto="Perfil"
-            url="/Perfil"
             estaAbierto={estaAbierto}
             cambiarBotonActivo={setBotonActivo}
           />
