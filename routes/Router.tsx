@@ -29,7 +29,7 @@ const router = createBrowserRouter(
           element={<RegistrarEspecimenForm isEditing={false} />}
         />
         <Route path="/avistamientos" element={<Avistamientos />} />
-        <Route path="/InfoEspecimen" element={<InfoEspecimen />} />
+        <Route path="/home/listar_especimenes/InfoEspecimen" element={<InfoEspecimen />} />
       </Route>
       <Route path="/*" element={<Login />} />
       <Route path="/login" element={<Login />} />

@@ -20,7 +20,6 @@ export interface Especimen {
   imagen: string
   idUbicacion: string
   region: string
-  ciudad: string
 }
 
 export type ListaEspecies = Especie[]
