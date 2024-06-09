@@ -1,7 +1,7 @@
 import { useAuth } from '../../context/auth/useAuth'
 import { Especimen } from '../types'
 import { useState, useCallback, useEffect } from 'react'
-import { Breadcrumbs, BreadcrumbItem, Input, Spinner } from '@nextui-org/react'
+import { Breadcrumbs, BreadcrumbItem, Input, Spinner, Modal, ModalHeader, ModalContent, ModalBody, ModalFooter, useDisclosure, Button } from '@nextui-org/react'
 import EspecimenCard from '../components/EspecimenCard'
 import { useLocation, useNavigate } from 'react-router-dom'
 import SearchIcon from "../assets/icons/SearchIcon";
@@ -13,6 +13,10 @@ const ListarEspecimenes: React.FC = () => {
     const [busqueda, setBusqueda] = useState("");
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
+
+    const { isOpen, onOpen, onClose } = useDisclosure();
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [selectedEspecimen, setSelectedEspecimen] = useState<string | null>(null);
 
     const location = useLocation();
     const { nombreEspecimen } = location.state as { nombreEspecimen: string };
@@ -102,9 +106,6 @@ const ListarEspecimenes: React.FC = () => {
                     throw new Error('Error al eliminar el especimen');
                 }
             })
-            .finally(() => {
-                window.location.reload();
-            });
     };
 
     useEffect(() => {
@@ -115,7 +116,17 @@ const ListarEspecimenes: React.FC = () => {
         }, 100);
     }, [])
 
+    const handleDelete = async () => {
+        if (selectedEspecimen !== null) {
+            setIsDeleting(true);
+            console.log(selectedEspecimen)
+            await eliminarEspecimen(selectedEspecimen);
+            setIsDeleting(false);
+            onClose();
 
+            window.location.reload();
+        }
+    };
 
     return (
         <>
@@ -160,12 +171,48 @@ const ListarEspecimenes: React.FC = () => {
                                             showDropdown={true}
                                             showButton={true}
                                             onEditar={() => especimen.id ? obtenerEspecimen(especimen.id) : null}
-                                            onEliminar={() => especimen.id ? eliminarEspecimen(especimen.id) : null}
+                                            onEliminar={() => {
+                                                if (especimen.id) {
+                                                    setSelectedEspecimen(especimen.id);
+                                                    onOpen();
+                                                }
+                                            }}
                                         />
                                     ))
                                 ) : (
                                     <p className="poppins-regular">No hay especímenes para mostrar.</p>
                                 )}
+
+                                <Modal isOpen={isOpen} onOpenChange={onClose}>
+                                    <ModalContent>
+                                        {(closeModal) => (
+                                            <>
+                                                <ModalHeader className="poppins-medium">Confirmación de eliminación</ModalHeader>
+                                                <ModalBody>
+                                                    {isDeleting ? (
+                                                        <div className="flex flex-col items-center justify-center">
+                                                            <Spinner size='md' color="success" />
+                                                            <p className="mt-2 mb-6 poppins-medium text-base">Eliminando espécimen...</p>
+                                                        </div>
+                                                    ) : (
+                                                        <p className="poppins-regular text-sm">¿Seguro de eliminar espécimen?</p>
+                                                    )}
+                                                </ModalBody>
+                                                {!isDeleting && (
+                                                    <ModalFooter className="poppins-regular">
+                                                        <Button color="danger" variant="flat" onPress={closeModal}>
+                                                            No
+                                                        </Button>
+                                                        <Button color="success" className="text-white" onPress={handleDelete}>
+                                                            Si
+                                                        </Button>
+                                                    </ModalFooter>
+                                                )}
+                                            </>
+                                        )}
+                                    </ModalContent>
+                                </Modal>
+
                             </div>
                         </div>
                     </div>
