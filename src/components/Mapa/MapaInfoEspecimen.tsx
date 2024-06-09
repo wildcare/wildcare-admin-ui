@@ -6,7 +6,11 @@ function MapaInfoEspecimen() {
   return (
     <>
       <APIProvider apiKey={'AIzaSyB2kB5gM51fzkKnQlj1QQotbDOnDbz8F38'}>
-        <Map defaultCenter={position} defaultZoom={10}>
+        <Map
+          defaultCenter={position}
+          defaultZoom={10}
+          style={{ borderRadius: 20, overflow: 'hidden' }}
+        >
           <Marker position={position} />
         </Map>
       </APIProvider>
