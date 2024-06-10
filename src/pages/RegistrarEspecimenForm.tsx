@@ -3,7 +3,6 @@ import { API_WILDCARE } from '../consts/APIWildCare'
 import { Especimen } from '../types'
 import { useCallback, useEffect, useState } from 'react'
 import {
-	Input,
 	Select,
 	SelectItem,
 	Textarea,
@@ -35,6 +34,7 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 	const [isLoading, setIsLoading] = useState(true)
 	const { obtenerTokenLocalStorage } = useAuth()
 	const [especies, setEspecies] = useState([] as ListaEspecies)
+	const [especimenes, setEspecimenes] = useState([] as string[])
 
 	const [fileName, setFileName] = useState<string>('')
 	const [imagen, setImagen] = useState<string | null>(null)
@@ -74,13 +74,27 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${obtenerTokenLocalStorage()}`,
+				Authorization: `Bearer ${await obtenerTokenLocalStorage()}`,
 			},
 		})
 			.then((response) => response.json())
 			.then((data) => {
 				setEspecies(data as unknown as ListaEspecies)
 				setIsLoading(false)
+			})
+	}
+
+	async function fetchEspecimenesDisponibles() {
+		await fetch(API_WILDCARE + '/especimenes/obtenerIdsDisponibles', {
+			method: 'GET',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${await obtenerTokenLocalStorage()}`,
+			},
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				setEspecimenes(data)
 			})
 	}
 
@@ -144,6 +158,7 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 			setEspecimen(especimenObtenido)
 			setImagen(especimenObtenido.imagen)
 		} else {
+			fetchEspecimenesDisponibles()
 			setReloadKey((prevKey) => prevKey + 1)
 			setEspecimen({} as Especimen)
 			setImagen(null)
@@ -164,12 +179,12 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 		return comunas
 	}, [especimen.region, infoPais])
 
-	const handleID = (event: React.KeyboardEvent<HTMLInputElement>) => {
-		const regex = /^[a-zA-Z0-9\s-áéíóúÁÉÍÓÚ]*$/
-		if (!regex.test(event.key)) {
-			event.preventDefault()
-		}
-	}
+	// const handleID = (event: React.KeyboardEvent<HTMLInputElement>) => {
+	// 	const regex = /^[a-zA-Z0-9\s-áéíóúÁÉÍÓÚ]*$/
+	// 	if (!regex.test(event.key)) {
+	// 		event.preventDefault()
+	// 	}
+	// }
 
 	async function createFormData(blobUrl: string, fileName: string) {
 		const response = await fetch(blobUrl)
@@ -187,7 +202,7 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 		fetch(API_WILDCARE + '/especimenes/editarImagen?id=' + idEspecimen, {
 			method: 'POST',
 			headers: {
-				Authorization: `Bearer ${obtenerTokenLocalStorage()}`,
+				Authorization: `Bearer ${await obtenerTokenLocalStorage()}`,
 			},
 			body: file,
 		})
@@ -227,7 +242,7 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${obtenerTokenLocalStorage()}`,
+				Authorization: `Bearer ${await obtenerTokenLocalStorage()}`,
 			},
 			body: JSON.stringify(especimen as Especimen),
 		})
@@ -292,22 +307,33 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 									</SelectItem>
 								))}
 							</Select>
-
-							<Input
+							<Select
 								className="poppins-semibold"
-								classNames={inputClasses}
+								classNames={selectClasses}
 								name="id"
 								value={especimen.id}
 								onChange={(e) => setearEspecimen(e.target.name, e.target.value)}
-								onKeyDown={handleID}
-								type="text"
-								label="ID"
+								defaultSelectedKeys={
+									especimen && especimen.id ? [especimen.id] : []
+								}
 								size="md"
-								placeholder="Ingrese ID de ubicación del espécimen"
+								label="Id"
+								placeholder="Seleccione el ID del espécimen"
 								isRequired
-								//desactivar la edición del id
-								disabled={location.state ? true : false}
-							/>
+								disallowEmptySelection={location.state ? true : false}
+							>
+								{location.state ? (
+									<SelectItem key={especimen.id} value={especimen.id}>
+										{especimen.id}
+									</SelectItem>
+								) : (
+									especimenes.map((especimen) => (
+										<SelectItem key={especimen} value={especimen}>
+											{especimen}
+										</SelectItem>
+									))
+								)}
+							</Select>
 
 							<Select
 								className="poppins-semibold"
