@@ -83,7 +83,7 @@ const ListarEspecimenes: React.FC = () => {
 					method: 'GET',
 					headers: {
 						'Content-Type': 'application/json',
-						Authorization: `Bearer ${obtenerTokenLocalStorage()}`,
+						Authorization: `Bearer ${await obtenerTokenLocalStorage()}`,
 					},
 				}
 			)
@@ -101,7 +101,7 @@ const ListarEspecimenes: React.FC = () => {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${obtenerTokenLocalStorage()}`,
+				Authorization: `Bearer ${await obtenerTokenLocalStorage()}`,
 			},
 		})
 			.then((response) => response.json())
@@ -118,7 +118,7 @@ const ListarEspecimenes: React.FC = () => {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json',
-				Authorization: `Bearer ${obtenerTokenLocalStorage()}`,
+				Authorization: `Bearer ${await obtenerTokenLocalStorage()}`,
 			},
 		}).then((response) => {
 			if (!response.ok) {

@@ -34,7 +34,7 @@ const InfoEspecimen = () => {
 	}, [])
 
 	return (
-		<div className="w-full   bg-gray-100 px-[50px] py-10 ">
+		<div className="w-full   bg-gray-100 px-10 py-6 ">
 			<h1 className="poppins-medium verdeClaro text-2xl text-start ">
 				Especies en peligro de extinción
 			</h1>
@@ -48,7 +48,7 @@ const InfoEspecimen = () => {
 						<MapaInfoEspecimen markers={ubicaciones} />
 					</div>
 					<div
-						className="w-full h-screen lg:h-fit lg:w-[45%] flex flex-col items-center justify-center"
+						className="w-full h-full lg:h-fit lg:w-[45%] flex flex-col items-center justify-center"
 						id="cardNuevoEspecimen2"
 					>
 						<EspecimenCard
@@ -70,7 +70,7 @@ const InfoEspecimen = () => {
 					</div>
 				</div>
 			) : (
-				<div className=" w-full h-[85%] pt-1">
+				<div className=" w-full h-[80%] pt-1">
 					<button
 						onClick={() => setSeccion('info')}
 						className="w-[150px] mb-3 fondoVerdeMedio poppins-regular text-white text-center text-xs py-2 rounded-xl mt-2 hover:bg-verdeOscuro"
