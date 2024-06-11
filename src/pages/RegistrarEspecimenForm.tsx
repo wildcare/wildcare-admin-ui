@@ -190,7 +190,7 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 	// 	}
 	// }
 
-	async function handleNavigation () {
+	async function handleNavigation() {
 		setTimeout(() => {
 			setEstadoPeticion(false)
 		}, 2000)
@@ -473,11 +473,13 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 						{estadoPeticion ? (
 							<>
 								<Spinner size="lg" color="success" />
-								<p className="poppins-medium mt-2">Registrando espécimen...</p>
+								<p className="poppins-medium mt-2">
+									{isEditing ? 'Actualizando espécimen...' : 'Registrando espécimen...'}
+								</p>
 							</>
 						) : (
 							<p className="poppins-medium">
-								Espécimen registrado exitosamente
+								{isEditing ? 'Espécimen actualizado exitosamente' : 'Espécimen registrado exitosamente'}
 							</p>
 						)}
 					</div>
