@@ -8,10 +8,13 @@ import {
 	DropdownTrigger,
 	DropdownMenu,
 	Button,
+	Link
 } from '@nextui-org/react'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 interface EspecimenCardProps {
+	width?: string
+	height?: string
 	id: string
 	region: string
 	nombre: string
@@ -24,6 +27,8 @@ interface EspecimenCardProps {
 }
 
 const EspecimenCard: React.FC<EspecimenCardProps> = ({
+	width = 'max-w-[19rem]',
+	height = 'h-fit max-h-[530px]',
 	id,
 	region,
 	nombre,
@@ -40,18 +45,21 @@ const EspecimenCard: React.FC<EspecimenCardProps> = ({
 	const idUbicacionDefault = 'XXXXXXX'
 	const imagenDefault = 'https://fakeimg.pl/600x400?text=Imagen'
 
+	const navigate = useNavigate()
+	const classesCard = `py-2 ${width} ${height} overflow-auto relative`;
+
 	return (
-		<Card className="py-2 min-w-xs max-w-xs h-fit max-h-[520px] overflow-auto relative">
+		<Card className={classesCard}>
 			<CardHeader className="pb-0 pt-2 px-4 flex-col items-start">
 				<div className="flex justify-between items-center w-full">
 					<div>
 						<p className="poppins-medium text-gray-400 mb-2 h-[3rem] pr-4">
 							{region || regionDefault}
 						</p>
-						<h1 className="poppins-semibold text-3xl mb-4">
+						<h1 className="poppins-semibold text-2xl mt-4 mb-4 h-[49px] flex items-center">
 							{nombre ? nombre.toUpperCase() : nombreDefault}
 						</h1>
-						<h4 className="poppins-medium   text-gray-500 text-sm text-justify mb-4 h-[5rem]">
+						<h4 className="poppins-medium text-gray-500 text-sm text-justify mb-1 min-h-[6rem] max-h-[6rem] break-normal flex items-center">
 							{descripcion || descripcionDefault}
 						</h4>
 					</div>
@@ -78,38 +86,38 @@ const EspecimenCard: React.FC<EspecimenCardProps> = ({
 										</svg>
 									</Button>
 								</DropdownTrigger>
-								<DropdownMenu className="poppins-semibold">
-									<DropdownItem onClick={onEditar}>Editar</DropdownItem>
-									<DropdownItem onClick={onEliminar}>Eliminar</DropdownItem>
+								<DropdownMenu className="poppins-semibold" aria-label="Menu de opciones">
+									<DropdownItem onClick={onEditar} aria-labelledby="Editar espécimen">Editar</DropdownItem>
+									<DropdownItem onClick={onEliminar} aria-labelledby="Eliminar espécimen">Eliminar</DropdownItem>
 								</DropdownMenu>
 							</Dropdown>
 						</div>
 					)}
 				</div>
 			</CardHeader>
-			<CardBody className="overflow-visible py-2">
+			<CardBody className="mt-1 overflow-visible py-2">
 				<Image
 					alt="Card background"
-					className="rounded-xl object-cover w-96 h-48"
+					className="rounded-xl object-fit h-[11rem]"
 					src={imagen || imagenDefault}
+					width={280}
 				/>
 				<p className="poppins-medium text-gray-400 text-center text-sm mt-2">
 					ID: {id || idUbicacionDefault}
 				</p>
 				{showButton && (
-					<Link
-						to="/home/listar_especimenes/InfoEspecimen"
-						state={{
-							id,
-							region,
-							nombre,
-							descripcion,
-							imagen,
-						}}
-						className="w-full fondoVerdeClaro text-white text-center py-2 rounded-xl mt-2 hover:bg-verdeOscuro"
-					>
+					<Button
+						as={Link}
+						onClick={() =>
+							navigate('/home/listar_especimenes/InfoEspecimen', {
+								state: {id, region, nombre, descripcion, imagen},
+							})
+						}
+						color="success"
+						className="mt-2 poppins-medium text-white"
+						>
 						Rastrear
-					</Link>
+					</Button>
 				)}
 			</CardBody>
 		</Card>
