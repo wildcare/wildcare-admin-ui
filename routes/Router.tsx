@@ -10,6 +10,7 @@ import RegistrarEspecimenForm from '../src/pages/RegistrarEspecimenForm'
 import Avistamientos from '../src/pages/Avistamientos'
 import ListarEspecimenes from '../src/pages/ListarEspecimenes'
 import InfoEspecimen from '../src/pages/InfoEspecimen'
+import InfoAvistamiento from '../src/pages/InfoAvistamiento'
 
 const router = createBrowserRouter(
   createRoutesFromElements(
@@ -29,6 +30,7 @@ const router = createBrowserRouter(
           element={<RegistrarEspecimenForm isEditing={false} />}
         />
         <Route path="/avistamientos" element={<Avistamientos />} />
+        <Route path="/info-avistamiento/:id" element={<InfoAvistamiento />} />
         <Route path="/home/listar_especimenes/InfoEspecimen" element={<InfoEspecimen />} />
       </Route>
       <Route path="/*" element={<Login />} />
