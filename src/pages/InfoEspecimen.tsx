@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Especimen } from '../../src/types'
+import { useNavigate } from 'react-router-dom'
 
 import EspecimenCard from '../components/EspecimenCard'
 import MapaInfoEspecimen from '../components/Mapa/MapaInfoEspecimen'
@@ -9,12 +10,13 @@ import { Ubicaciones } from '../types'
 import { APIProvider } from '@vis.gl/react-google-maps'
 const InfoEspecimen = () => {
 	const { state } = useLocation()
+	const navigate = useNavigate()
 	const especimen = state as Especimen
 	const [ubicaciones, setUbicaciones] = useState<Ubicaciones>([])
 	const [predicciones, setPredicciones] = useState<Ubicaciones>([])
 	const [ultimaUbicacion, setUltimaUbicacion] = useState<Ubicaciones>([])
 	const [seccion, setSeccion] = useState('info')
-	const [isLoading, setIsLoading] = useState(false)
+	const [isLoading, setIsLoading] = useState(true)
 
 	const obtenerUltimaUbicacion = () => {
 		fetch(API_WILDCARE + '/ubicacion/obtenerUltimaUbicacion', {
@@ -43,6 +45,22 @@ const InfoEspecimen = () => {
 			.then((res) => res.json())
 			.then((res) => {
 				setUbicaciones(res)
+			})
+			.catch((err) => console.log(err))
+			.finally(() => setIsLoading(false))
+	}
+
+	const obtenerPrediccion = () => {
+		fetch(API_WILDCARE + '/prediccion', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ id: especimen.id }),
+		})
+			.then((res) => res.json())
+			.then((res) => {
+				setPredicciones(res)
 			})
 			.catch((err) => console.log(err))
 			.finally(() => setIsLoading(true))
@@ -124,7 +142,7 @@ const InfoEspecimen = () => {
 						/>
 					</APIProvider>
 				</div>
-			)}
+			</div>
 		</div>
 	)
 }

@@ -14,7 +14,7 @@ import {
 } from '@nextui-org/react'
 import EspecimenCard from '../components/EspecimenCard'
 import { ListaEspecies } from '../types'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 interface Region {
 	region: string
@@ -45,6 +45,9 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 
 	const [showModal, setShowModal] = useState(false)
 	const [estadoPeticion, setEstadoPeticion] = useState(false)
+
+	const [caracteresDescripcion, setCaracteresDescripcion] = useState(0);
+	const navigate = useNavigate()
 
 	const location = useLocation()
 
@@ -105,7 +108,6 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 	 */
 	const setearEspecimen = (label: string, value: string | number) => {
 		setEspecimen((prev) => ({ ...prev, [label]: value }))
-		console.log(especimen)
 	}
 
 	const setearImagen = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -157,11 +159,13 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 			}
 			setEspecimen(especimenObtenido)
 			setImagen(especimenObtenido.imagen)
+			setCaracteresDescripcion(especimenObtenido.descripcion.length)
 		} else {
 			fetchEspecimenesDisponibles()
 			setReloadKey((prevKey) => prevKey + 1)
-			setEspecimen({} as Especimen)
+			setEspecimen({ descripcion: '' } as Especimen)
 			setImagen(null)
+			setCaracteresDescripcion(0)
 		}
 		setTimeout(() => {
 			window.scrollTo(0, 0)
@@ -186,6 +190,24 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 	// 	}
 	// }
 
+	async function handleNavigation() {
+		setTimeout(() => {
+			setEstadoPeticion(false)
+		}, 2000)
+		setTimeout(() => {
+			setShowModal(false)
+		}, 4000)
+		setTimeout(() => {
+			if (isEditing) {
+				navigate('/home/listar_especimenes', {
+					state: { nombreEspecimen: especimen.nombre },
+				})
+			} else {
+				navigate('/home')
+			}
+		}, 5500)
+	}
+
 	async function createFormData(blobUrl: string, fileName: string) {
 		const response = await fetch(blobUrl)
 		const blob = await response.blob()
@@ -207,22 +229,8 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 			body: file,
 		})
 			.then((response) => response.text())
-			.then((data) => {
-				setTimeout(() => {
-					setEstadoPeticion(false)
-					console.log('Success:', data)
-				}, 2000)
-			})
 			.catch((error) => {
 				console.error('Error:', error)
-			})
-			.finally(() => {
-				setTimeout(() => {
-					setShowModal(false)
-				}, 4000)
-				setTimeout(() => {
-					window.location.href = '/home'
-				}, 5500)
 			})
 	}
 
@@ -233,11 +241,9 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 	 */
 	async function registrarEspecimen(event: React.FormEvent<HTMLFormElement>) {
 		event.preventDefault()
-		console.log(especimen)
-
 		setShowModal(true)
-
 		setEstadoPeticion(true)
+
 		await fetch(API_WILDCARE + '/especimenes/crear', {
 			method: 'POST',
 			headers: {
@@ -250,17 +256,9 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 			.then((data) => {
 				if (imagenModificada) {
 					registrarImagen(data)
+					handleNavigation()
 				} else {
-					setTimeout(() => {
-						setEstadoPeticion(false)
-						console.log('Success:', data)
-					}, 2000)
-					setTimeout(() => {
-						setShowModal(false)
-					}, 4000)
-					setTimeout(() => {
-						window.location.href = '/home'
-					}, 5500)
+					handleNavigation()
 				}
 			})
 			.catch((error) => {
@@ -377,17 +375,24 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 								))}
 							</Select>
 
-							<Textarea
-								className="poppins-semibold"
-								classNames={inputClasses}
-								name="descripcion"
-								value={especimen.descripcion}
-								onChange={(e) => setearEspecimen(e.target.name, e.target.value)}
-								label="Descripción"
-								placeholder="Ingrese descripción del espécimen"
-								minRows={3}
-								isRequired
-							/>
+							<div className="flex flex-col space-y-[8px]">
+								<Textarea
+									className="poppins-semibold"
+									classNames={inputClasses}
+									name="descripcion"
+									value={especimen.descripcion}
+									onChange={(e) => {
+										setearEspecimen(e.target.name, e.target.value);
+										setCaracteresDescripcion(e.target.value.length);
+									}}
+									label="Descripción"
+									placeholder="Ingrese descripción del espécimen"
+									minRows={3}
+									maxLength={165}
+									isRequired
+								/>
+								<p className="poppins-regular text-sm ml-1">{caracteresDescripcion}/165 carácteres</p>
+							</div>
 
 							<div className="flex items-center justify-center w-full">
 								<label
@@ -404,9 +409,9 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 										>
 											<path
 												stroke="currentColor"
-												stroke-linecap="round"
-												stroke-linejoin="round"
-												stroke-width="2"
+												strokeLinecap="round"
+												strokeLinejoin="round"
+												strokeWidth="2"
 												d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
 											/>
 										</svg>
@@ -443,6 +448,7 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 							id="cardNuevoEspecimen"
 						>
 							<EspecimenCard
+								height="h-fit"
 								region={especimen.region}
 								nombre={especimen.nombre}
 								descripcion={especimen.descripcion}
@@ -467,11 +473,13 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 						{estadoPeticion ? (
 							<>
 								<Spinner size="lg" color="success" />
-								<p className="poppins-medium mt-2">Registrando espécimen...</p>
+								<p className="poppins-medium mt-2">
+									{isEditing ? 'Actualizando espécimen...' : 'Registrando espécimen...'}
+								</p>
 							</>
 						) : (
 							<p className="poppins-medium">
-								Espécimen registrado exitosamente
+								{isEditing ? 'Espécimen actualizado exitosamente' : 'Espécimen registrado exitosamente'}
 							</p>
 						)}
 					</div>

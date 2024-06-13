@@ -73,8 +73,8 @@ const ListarEspecimenes: React.FC = () => {
 	}
 
 	const obtenerEspecimenes = async (nombreEspecie: string) => {
-		console.log(nombreEspecie)
 		setLoading(true)
+
 		// Agrega un tiempo de espera de 2 segundos (2000 milisegundos)
 		setTimeout(async () => {
 			await fetch(
@@ -89,7 +89,6 @@ const ListarEspecimenes: React.FC = () => {
 			)
 				.then((response) => response.json())
 				.then((data) => {
-					console.log(data)
 					setEspecimenes(data)
 				})
 				.finally(() => setLoading(false))
@@ -106,7 +105,6 @@ const ListarEspecimenes: React.FC = () => {
 		})
 			.then((response) => response.json())
 			.then((data) => {
-				console.log(data)
 				navigate('/home/editar_especimen', {
 					state: { especimenObtenido: data },
 				})
@@ -138,7 +136,6 @@ const ListarEspecimenes: React.FC = () => {
 	const handleDelete = async () => {
 		if (selectedEspecimen !== null) {
 			setIsDeleting(true)
-			console.log(selectedEspecimen)
 			await eliminarEspecimen(selectedEspecimen)
 			setIsDeleting(false)
 			onClose()
@@ -156,7 +153,7 @@ const ListarEspecimenes: React.FC = () => {
 							Especies en peligro de extinción
 						</h1>
 						<Breadcrumbs size="lg" className="poppins-medium verdeClaro">
-							<BreadcrumbItem href="/home">Especies</BreadcrumbItem>
+							<BreadcrumbItem onClick={() => navigate('/home')}>Especies</BreadcrumbItem>
 							<BreadcrumbItem href="#">{nombreEspecimen}</BreadcrumbItem>
 						</Breadcrumbs>
 						<div className="ml-14 mt-8">
@@ -180,7 +177,7 @@ const ListarEspecimenes: React.FC = () => {
 							>
 								{loading ? (
 									<div className="flex items-center justify-center gap-4">
-										<Spinner size="lg" color="success" />
+										<Spinner size="md" color="success" />
 										<h2 className="poppins-medium mt-2">Cargando...</h2>
 									</div>
 								) : especimenesFiltrados.length > 0 ? (
@@ -206,7 +203,7 @@ const ListarEspecimenes: React.FC = () => {
 										/>
 									))
 								) : (
-									<p className="poppins-regular">
+									<p className="ml-2 poppins-regular">
 										No hay especímenes para mostrar.
 									</p>
 								)}
