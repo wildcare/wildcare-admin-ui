@@ -5,7 +5,7 @@ import { useSnackbar } from 'notistack'
 import {
 	GoogleAuthProvider,
 	signInWithPopup,
-	signInWithEmailAndPassword,
+	signInWithEmailAndPassword
 } from 'firebase/auth'
 import { authContext } from './AuthContext'
 
@@ -13,7 +13,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
 	const [usuario, setUsuario] = useState({
-		corro: '',
+		correo: '',
 		password: '',
 		token: '',
 	} as User)
@@ -58,6 +58,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 				usuario.correo as string,
 				usuario.password as string
 			)
+			
 			const token = await credencialesUsuario.user.getIdToken()
 			console.log('token:', token)
 			const newUser = {

@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Especimen } from '../../src/types'
-import { Spinner } from '@nextui-org/react'
+import { useNavigate } from 'react-router-dom'
 
 import EspecimenCard from '../components/EspecimenCard'
 import MapaInfoEspecimen from '../components/Mapa/MapaInfoEspecimen'
@@ -8,8 +8,11 @@ import { useLocation } from 'react-router-dom'
 import { API_WILDCARE } from '../consts/APIWildCare'
 import { Ubicaciones } from '../types'
 import { APIProvider } from '@vis.gl/react-google-maps'
+import { BreadcrumbItem, Breadcrumbs, Button, Spinner } from '@nextui-org/react'
+
 const InfoEspecimen = () => {
 	const { state } = useLocation()
+	const navigate = useNavigate()
 	const especimen = state as Especimen
 	const [ubicaciones, setUbicaciones] = useState<Ubicaciones>([])
 	const [predicciones, setPredicciones] = useState<Ubicaciones>([])
@@ -71,71 +74,80 @@ const InfoEspecimen = () => {
 	}, [])
 
 	return (
-		<>
-			{isLoading ? (
-				<div className="w-screen h-screen flex items-center justify-center gap-4">
-					<Spinner color="success" />
-					<h2 className="poppins-medium mt-2">Cargando...</h2>
-				</div>
-			) : (
-				<div className="w-full   bg-gray-100 px-10 py-6 ">
-					<h1 className="poppins-medium verdeClaro text-2xl text-start ">
+		<div className="w-full min-h-screen bg-gray-100">
+			<div className="flex flex-col md:flex-row gap-4 md:gap-40 mx-4 md:mx-24 mt-8">
+				<div className="w-full h-full">
+					<h1 className="poppins-medium verdeClaro text-2xl mb-2">
 						Especies en peligro de extinción
 					</h1>
+					<Breadcrumbs size="lg" className="poppins-medium verdeClaro">
+						<BreadcrumbItem onClick={() => navigate('/home')}>Especies</BreadcrumbItem>
+						<BreadcrumbItem onClick={() =>
+							navigate('/home/listar_especimenes', {
+								state: { nombreEspecimen: especimen.nombre },
+							})
+						}>{especimen.nombre}</BreadcrumbItem>
+						<BreadcrumbItem href="#">{especimen.id}</BreadcrumbItem>
+					</Breadcrumbs>
 
-					<h1 className="poppins-regular verdeClaro text-medium w-[470px] ">
-						{'Especimenes> ' + especimen.nombre + '> ' + especimen.id}
-					</h1>
-					{seccion === 'info' ? (
-						<div className=" w-full lg:flex justify-center items-center ">
-							<div className="w-full lg:w-[55%] h-[470px] mt-12">
-								<APIProvider apiKey={'AIzaSyB2kB5gM51fzkKnQlj1QQotbDOnDbz8F38'}>
-									<MapaInfoEspecimen ubicaciones={ultimaUbicacion} />
-								</APIProvider>
+					<div className="w-full lg:flex justify-center items-center">
+						{isLoading ? (
+							<div className="w-full h-[60vh] flex items-center justify-center gap-4">
+								<Spinner color="success" />
+								<h2 className="poppins-medium mt-2">Cargando...</h2>
 							</div>
-							<div
-								className="w-full h-full lg:h-fit lg:w-[45%] flex flex-col items-center justify-center"
-								id="cardNuevoEspecimen2"
-							>
-								<EspecimenCard
-									id={especimen.id}
-									region={especimen.region}
-									nombre={especimen.nombre}
-									descripcion={especimen.descripcion}
-									imagen={especimen.imagen}
-									showDropdown={false}
-								/>
-								<button
-									onClick={async () => {
-										setSeccion('ubicacion')
-										obtenerUbicaciones()
-										obtenerPrediccion()
-									}}
-									className="w-[250px] fondoVerdeMedio poppins-medium text-white text-center py-2 rounded-xl mt-2 hover:bg-verdeOscuro"
-								>
-									Rastrear
-								</button>
+						) : seccion === 'info' ? (
+							<div className="w-full lg:flex justify-center items-center mt-12 gap-4">
+								<div className="w-full lg:w-[55%] h-[74vh]">
+									<APIProvider apiKey={'AIzaSyB2kB5gM51fzkKnQlj1QQotbDOnDbz8F38'}>
+										<MapaInfoEspecimen ubicaciones={ultimaUbicacion} />
+									</APIProvider>
+								</div>
+								<div className="w-full lg:w-[45%] flex flex-col items-center justify-center" id="cardNuevoEspecimen2" >
+									<EspecimenCard
+										id={especimen.id}
+										region={especimen.region}
+										nombre={especimen.nombre}
+										descripcion={especimen.descripcion}
+										imagen={especimen.imagen}
+										showDropdown={false}
+									/>
+									<Button
+										size="md"
+										onClick={async () => {
+											setSeccion('ubicacion')
+											obtenerUbicaciones()
+											obtenerPrediccion()
+										}}
+										className="w-[250px] mt-2 fondoVerdeMedio poppins-medium text-white hover:bg-verdeOscuro"
+									>
+										Rastrear
+									</Button>
+								</div>
 							</div>
-						</div>
-					) : (
-						<div className=" w-full h-[80%] pt-1">
-							<button
-								onClick={() => setSeccion('info')}
-								className="w-[150px] mb-3 fondoVerdeMedio poppins-regular text-white text-center text-xs py-2 rounded-xl mt-2 hover:bg-verdeOscuro"
-							>
-								Ver información
-							</button>
-							<APIProvider apiKey={'AIzaSyB2kB5gM51fzkKnQlj1QQotbDOnDbz8F38'}>
-								<MapaInfoEspecimen
-									ubicaciones={ubicaciones}
-									predicciones={predicciones}
-								/>
-							</APIProvider>
-						</div>
-					)}
+						) : (
+							<div className="w-full lg:flex justify-center items-center">
+								<div className="w-full h-[76vh] pt-1">
+									<Button
+										size="md"
+										onClick={() => setSeccion('info')}
+										className="w-[150px] mb-3 fondoVerdeMedio poppins-medium text-white mt-2 hover:bg-verdeOscuro"
+									>
+										Ver información
+									</Button>
+									<APIProvider apiKey={'AIzaSyB2kB5gM51fzkKnQlj1QQotbDOnDbz8F38'}>
+										<MapaInfoEspecimen
+											ubicaciones={ubicaciones}
+											predicciones={predicciones}
+										/>
+									</APIProvider>
+								</div>
+							</div>
+						)}
+					</div>
 				</div>
-			)}
-		</>
+			</div>
+		</div>
 	)
 }
 

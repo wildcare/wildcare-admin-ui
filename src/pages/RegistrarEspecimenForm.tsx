@@ -277,11 +277,11 @@ const RegistrarEspecimenForm: React.FC<RegistrarEspecimenFormProps> = ({
 				<div className="w-full min-h-screen bg-gray-100">
 					<div className="flex flex-col md:flex-row gap-4 md:gap-40 mx-4 md:mx-24 mt-8">
 						<form
-							className="w-full md:w-1/2 space-y-5 mb-8"
+							className="w-full md:w-1/2 space-y-4 mb-4"
 							onSubmit={registrarEspecimen}
 							key={reloadKey}
 						>
-							<h1 className="poppins-medium verdeClaro text-2xl mb-8">
+							<h1 className="poppins-medium verdeClaro text-2xl mb-6">
 								{isEditing ? 'Editar espécimen' : 'Registrar nuevo espécimen'}
 							</h1>
 
