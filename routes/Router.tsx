@@ -36,7 +36,7 @@ const router = createBrowserRouter(
         />
 
         <Route path="/avistamientos" element={<Avistamientos />} />
-        <Route path="/info-avistamiento/:id" element={<InfoAvistamiento />} />
+        <Route path="/avistamientos/info-avistamiento/:id" element={<InfoAvistamiento />} />
         <Route path="/home/listar_especimenes/InfoEspecimen" element={<InfoEspecimen />} />
       </Route>
       <Route path="/*" element={<Login />} />
