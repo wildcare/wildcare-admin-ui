@@ -224,7 +224,9 @@ const Avistamientos: React.FC = () => {
 					return (
 						<Chip
 							className="capitalize"
-							color={statusColorMap[avistamiento.estado]}
+							color={
+								statusColorMap[cellValue] as 'success' | 'danger' | 'warning'
+							}
 							size="sm"
 							variant="flat"
 						>
@@ -293,7 +295,7 @@ const Avistamientos: React.FC = () => {
 								<TableRow key={item.id}>
 									{(columnKey) => (
 										<TableCell className="poppins-medium">
-											{renderCell(item, columnKey)}
+											{renderCell(item, columnKey as string)}
 										</TableCell>
 									)}
 								</TableRow>

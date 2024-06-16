@@ -4,13 +4,24 @@ import { Button, Input, Image } from '@nextui-org/react'
 import { useAuth } from '../../context/auth/useAuth'
 import EyeFilledIcon from '../assets/icons/EyeFilledIcon'
 import EyeSlashFilledIcon from '../assets/icons/EyeSlashFilledIcon'
+import { useSnackbar } from 'notistack'
 
 const Login: React.FC = () => {
 	const [isVisible, setIsVisible] = React.useState(false)
 	const toggleVisibility = () => setIsVisible(!isVisible)
+	const { enqueueSnackbar } = useSnackbar()
 
 	const { inicioSesion, setCamposUsuario, usuario } = useAuth()
-	console.log('usuario:', usuario)
+	const login = async () => {
+		const estadoLogin = await inicioSesion()
+		console.log(estadoLogin)
+		if (!estadoLogin) {
+			enqueueSnackbar('Correo o contraseña incorrectos', {
+				autoHideDuration: 3000,
+				variant: 'error',
+			})
+		}
+	}
 
 	return (
 		<div className="w-screen h-screen bg-slate-100 flex">
@@ -28,7 +39,7 @@ const Login: React.FC = () => {
 					<form
 						onSubmit={(e) => {
 							e.preventDefault()
-							inicioSesion()
+							login()
 						}}
 						className="w-full flex flex-col items-center justify-center"
 					>
