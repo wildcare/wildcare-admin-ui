@@ -296,7 +296,7 @@ const Avistamientos: React.FC = () => {
               loadingContent={<Spinner color="success" label="Cargando..." />}
             >
               {(item) => (
-                <TableRow key={item.id} className="cursor-pointer" onClick={() => navigate(`/info-avistamiento/${item.id}`)}  >
+                <TableRow key={item.id} className="cursor-pointer" onClick={() => navigate(`/avistamientos/info-avistamiento/${item.id}`)}  >
                   {(columnKey) => (
                     <TableCell className="poppins-medium">
                       {renderCell(item, columnKey)}
