@@ -7,7 +7,7 @@ interface AuthProviderProps {
 	isLoggedIn: boolean
 	inicioConGoogle: () => void
 	cerrarSesion: () => void
-	inicioSesion: () => void
+	inicioSesion: () => Promise<boolean>
 	setCamposUsuario: (campo: string, valor: string) => void
 	obtenerTokenLocalStorage: () => Promise<string | undefined>
 }
