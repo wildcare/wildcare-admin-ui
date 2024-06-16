@@ -156,8 +156,8 @@ const ListarEspecimenes: React.FC = () => {
 							<BreadcrumbItem onClick={() => navigate('/home')}>Especies</BreadcrumbItem>
 							<BreadcrumbItem href="#">{nombreEspecimen}</BreadcrumbItem>
 						</Breadcrumbs>
-						<div className="ml-14 mt-8">
-							<div className="mb-8">
+						<div className="ml-14 mt-6">
+							<div className="mb-4">
 								<Input
 									isClearable
 									size="md"

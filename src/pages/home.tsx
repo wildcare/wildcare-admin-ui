@@ -7,7 +7,7 @@ import { Spinner } from '@nextui-org/react'
 
 function Home() {
 	const { obtenerTokenLocalStorage } = useAuth()
-	const usuario = 'Matias'
+	const usuario = localStorage.getItem('user') || 'Usuario'
 	const [especies, setEspecies] = useState([] as ListaEspecies)
 	const navigate = useNavigate()
 	const [loading, setLoading] = useState(false)
@@ -33,7 +33,7 @@ function Home() {
 
 	return (
 		<>
-			<div className=" w-full h-full poppins-regular  ">
+			<div className="w-full h-full poppins-regular bg-gray-100">
 				{loading ? (
 					<div className="w-full h-screen flex items-center justify-center gap-4">
 						<Spinner color="success" />
@@ -41,10 +41,10 @@ function Home() {
 					</div>
 				) : (
 					<>
-						<h2 className="text-xl  text-gray-800 mt-5 ml-10 verdeMedio ">
-							Bienvenido, {usuario}
+						<h2 className="poppins-medium verdeClaro text-2xl mt-5 ml-10">
+							Te damos la bienvenida
 						</h2>
-						<h2 className="text-md text-gray-800   ml-10 mb-8 verdeMedio ">
+						<h2 className="poppins-regular verdeClaro text-lg ml-10 mb-8">
 							Especies en peligro de extinción
 						</h2>
 

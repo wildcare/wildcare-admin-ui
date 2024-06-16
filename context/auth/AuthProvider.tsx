@@ -5,15 +5,16 @@ import { useSnackbar } from 'notistack'
 import {
 	GoogleAuthProvider,
 	signInWithPopup,
-	signInWithEmailAndPassword,
+	signInWithEmailAndPassword
 } from 'firebase/auth'
 import { authContext } from './AuthContext'
+import { API_WILDCARE } from '../../src/consts/APIWildCare'
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 	children,
 }) => {
 	const [usuario, setUsuario] = useState({
-		corro: '',
+		correo: '',
 		password: '',
 		token: '',
 	} as User)
@@ -51,13 +52,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 		localStorage.removeItem('user')
 	}, [])
 
+	const iniciarSesionFireStore = async (correo: string, password: string) => {
+		return fetch(API_WILDCARE + '/admin/iniciarSesion', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ correo, password }),
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				return data as boolean
+			})
+			.catch(() => {
+				return false
+			})
+	}
+
 	const inicioSesion = useCallback(async () => {
 		try {
+			const isLogeado = await iniciarSesionFireStore(
+				usuario.correo as string,
+				usuario.password as string
+			)
+			console.log('isLogeado:', isLogeado)
+			if (!isLogeado as boolean) {
+				return false
+			}
 			const credencialesUsuario = await signInWithEmailAndPassword(
 				auth,
 				usuario.correo as string,
 				usuario.password as string
 			)
+			
 			const token = await credencialesUsuario.user.getIdToken()
 			console.log('token:', token)
 			const newUser = {
@@ -68,13 +95,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 			window.location.href = '/home'
 			saveUserToLocalStorage(newUser)
 			setIsLoggedIn(true)
-			return token
+			return true
 		} catch (error) {
-			enqueueSnackbar('Error al iniciar sesión', {
-				autoHideDuration: 3000,
-				variant: 'error',
-			})
 			console.error('Error en login:', error)
+			return false
 		}
 	}, [usuario])
 
