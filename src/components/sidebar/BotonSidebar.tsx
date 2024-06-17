@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom';
 
 interface PropsBotonSidebar {
 	icono: React.ReactNode
@@ -60,4 +60,4 @@ const BotonSidebar: React.FC<PropsBotonSidebar> = ({
 	)
 }
 
-export default BotonSidebar
+export default BotonSidebar;
