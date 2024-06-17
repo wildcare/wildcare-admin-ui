@@ -81,12 +81,18 @@ const InfoEspecimen = () => {
 						Especies en peligro de extinción
 					</h1>
 					<Breadcrumbs size="lg" className="poppins-medium verdeClaro">
-						<BreadcrumbItem onClick={() => navigate('/home')}>Especies</BreadcrumbItem>
-						<BreadcrumbItem onClick={() =>
-							navigate('/home/listar_especimenes', {
-								state: { nombreEspecimen: especimen.nombre },
-							})
-						}>{especimen.nombre}</BreadcrumbItem>
+						<BreadcrumbItem onClick={() => navigate('/home')}>
+							Especies
+						</BreadcrumbItem>
+						<BreadcrumbItem
+							onClick={() =>
+								navigate('/home/listar_especimenes', {
+									state: { nombreEspecimen: especimen.nombre },
+								})
+							}
+						>
+							{especimen.nombre}
+						</BreadcrumbItem>
 						<BreadcrumbItem href="#">{especimen.id}</BreadcrumbItem>
 					</Breadcrumbs>
 
@@ -97,13 +103,18 @@ const InfoEspecimen = () => {
 								<h2 className="poppins-medium mt-2">Cargando...</h2>
 							</div>
 						) : seccion === 'info' ? (
-							<div className="w-full lg:flex justify-center items-center mt-12 gap-4">
+							<div className="w-full lg:flex justify-center items-center mt-4 gap-4">
 								<div className="w-full lg:w-[55%] h-[74vh]">
-									<APIProvider apiKey={'AIzaSyB2kB5gM51fzkKnQlj1QQotbDOnDbz8F38'}>
+									<APIProvider
+										apiKey={'AIzaSyB2kB5gM51fzkKnQlj1QQotbDOnDbz8F38'}
+									>
 										<MapaInfoEspecimen ubicaciones={ultimaUbicacion} />
 									</APIProvider>
 								</div>
-								<div className="w-full lg:w-[45%] flex flex-col items-center justify-center" id="cardNuevoEspecimen2" >
+								<div
+									className="w-full lg:w-[45%] flex flex-col items-center justify-center"
+									id="cardNuevoEspecimen2"
+								>
 									<EspecimenCard
 										id={especimen.id}
 										region={especimen.region}
@@ -135,7 +146,9 @@ const InfoEspecimen = () => {
 									>
 										Ver información
 									</Button>
-									<APIProvider apiKey={'AIzaSyB2kB5gM51fzkKnQlj1QQotbDOnDbz8F38'}>
+									<APIProvider
+										apiKey={'AIzaSyB2kB5gM51fzkKnQlj1QQotbDOnDbz8F38'}
+									>
 										<MapaInfoEspecimen
 											ubicaciones={ubicaciones}
 											predicciones={predicciones}

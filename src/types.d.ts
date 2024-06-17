@@ -26,5 +26,8 @@ export interface Ubicacion {
 	lat: number
 	fecha: string
 }
+export interface PropsIcon {
+	activo: boolean
+}
 export type Ubicaciones = Ubicacion[]
 export type ListaEspecies = Especie[]
