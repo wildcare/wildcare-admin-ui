@@ -7,7 +7,7 @@ import { Spinner } from '@nextui-org/react'
 
 function Home() {
 	const { obtenerTokenLocalStorage } = useAuth()
-	const usuario = localStorage.getItem('user') || 'Usuario'
+	//const usuario = localStorage.getItem('user') || 'Usuario'
 	const [especies, setEspecies] = useState([] as ListaEspecies)
 	const navigate = useNavigate()
 	const [loading, setLoading] = useState(false)

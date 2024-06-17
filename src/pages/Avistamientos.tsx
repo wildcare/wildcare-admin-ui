@@ -49,7 +49,7 @@ interface Avistamiento {
 }
 
 interface StatusColorMap {
-  [key: string]: string;
+  [key: string]: "success" | "default" | "primary" | "secondary" | "warning" | "danger" | undefined;
 }
 
 interface Searchable {
@@ -322,7 +322,7 @@ const Avistamientos: React.FC = () => {
                 <TableRow key={item.id} className="cursor-pointer" onClick={() => navigate(`/avistamientos/info-avistamiento/${item.id}`)}  >
                   {(columnKey) => (
                     <TableCell className="poppins-medium">
-                      {renderCell(item, columnKey)}
+                        {renderCell(item, String(columnKey))}
                     </TableCell>
                   )}
                 </TableRow>

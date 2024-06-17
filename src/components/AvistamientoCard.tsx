@@ -1,4 +1,4 @@
-import { Card, CardHeader, CardBody, Image, Button, Chip } from '@nextui-org/react';
+import { Card, CardHeader, CardBody, Image, Chip } from '@nextui-org/react';
 import { API_WILDCARE } from '../consts/APIWildCare';
 import { useAuth } from '../../context/auth/useAuth';
 import { useState } from 'react';
