@@ -1,4 +1,11 @@
-import { Map, Marker, useMap, useMapsLibrary } from '@vis.gl/react-google-maps'
+import {
+	Map,
+	AdvancedMarker,
+	useMap,
+	useMapsLibrary,
+	InfoWindow,
+	Marker,
+} from '@vis.gl/react-google-maps'
 import { Ubicaciones } from '../../types'
 interface MapaInfoEspecimenProps {
 	ubicaciones: Ubicaciones
@@ -45,8 +52,9 @@ const MapaInfoEspecimen: React.FC<MapaInfoEspecimenProps> = ({
 	trasaPrediccion.setMap(map)
 	return (
 		<Map
+			mapId={'mapaInfoEspecimen'}
 			defaultCenter={ubicaciones[Math.trunc(ubicaciones.length - 1)]}
-			defaultZoom={18}
+			defaultZoom={13}
 			style={{
 				overflow: 'hidden',
 				//agregar shadow y un borde un poco mas oscuro y un radio de 20
@@ -54,27 +62,62 @@ const MapaInfoEspecimen: React.FC<MapaInfoEspecimenProps> = ({
 				borderRadius: '20px',
 			}}
 		>
-			{ubicaciones.length == 1 &&
+			{ubicaciones.length === 1 &&
 				ubicaciones?.map((marker, index) => {
 					return (
-						<Marker
-							key={index}
-							position={marker}
-							animation={window.google.maps.Animation.DROP}
-						></Marker>
+						<>
+							<AdvancedMarker key={index} position={marker}></AdvancedMarker>
+							<InfoWindow position={marker} maxWidth={200}>
+								<p className="text-center poppins-medium">
+									{'Ultima ubicación registrada el: '}
+								</p>
+								<p className="text-center poppins-medium  ">
+									{ubicaciones ? ubicaciones[0].fecha : 'No hay ubicaciones'}
+								</p>
+							</InfoWindow>
+						</>
 					)
 				})}
-
-			{predicciones?.map((marker, index) => {
-				return (
+			{ubicaciones.length != 1 && (
+				<>
 					<Marker
-						key={index}
-						position={marker}
-						animation={window.google.maps.Animation.BOUNCE}
-						opacity={0.5}
-					></Marker>
-				)
-			})}
+						position={ubicaciones[ubicaciones.length - 1]}
+						icon={{
+							url: 'https://maps.google.com/mapfiles/ms/icons/green-dot.png',
+						}}
+					/>
+					<InfoWindow
+						position={ubicaciones[ubicaciones.length - 1]}
+						maxWidth={200}
+					>
+						<p className="text-center poppins-medium  ">
+							{'Ultima ubicación registrada el '}
+						</p>
+						<p className="text-center poppins-medium  ">
+							{ubicaciones[ubicaciones.length - 1].fecha}
+						</p>
+					</InfoWindow>
+				</>
+			)}
+
+			{predicciones.length != 0 && (
+				<>
+					<AdvancedMarker
+						position={predicciones[predicciones.length - 1]}
+					></AdvancedMarker>
+					<InfoWindow
+						position={predicciones[predicciones.length - 1]}
+						maxWidth={200}
+					>
+						<p className="text-center poppins-medium">
+							{'Ubicación estimada el'}
+						</p>
+						<p className="text-center poppins-medium  ">
+							{predicciones[predicciones.length - 1].fecha}
+						</p>
+					</InfoWindow>
+				</>
+			)}
 		</Map>
 	)
 }

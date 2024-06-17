@@ -107,6 +107,7 @@ const InfoEspecimen = () => {
 								<div className="w-full lg:w-[55%] h-[74vh]">
 									<APIProvider
 										apiKey={'AIzaSyB2kB5gM51fzkKnQlj1QQotbDOnDbz8F38'}
+										libraries={['marker']}
 									>
 										<MapaInfoEspecimen ubicaciones={ultimaUbicacion} />
 									</APIProvider>
