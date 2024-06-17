@@ -118,6 +118,30 @@ const Avistamientos: React.FC = () => {
 
   };
 
+  const eliminarAvistamiento = async (id: string) => {
+    console.log('eliminando avistamiento')
+    try {
+      const response = await fetch(API_WILDCARE + '/avistamientos/eliminar/'+id, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${await obtenerTokenLocalStorage()}`,
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Error al eliminar el avistamiento');
+      }
+
+      alert('Avistamiento eliminado correctamente')	
+      await fetchAvistamientos();
+  
+  
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     fetchAvistamientos();
   }, []);
@@ -245,9 +269,8 @@ const Avistamientos: React.FC = () => {
                   </Button>
                 </DropdownTrigger>
                 <DropdownMenu>
-                  <DropdownItem>View</DropdownItem>
-                  <DropdownItem>Edit</DropdownItem>
-                  <DropdownItem>Delete</DropdownItem>
+                  <DropdownItem onClick={() => navigate(`/avistamientos/info-avistamiento/${avistamiento.id}`)}>Ver</DropdownItem>
+                  <DropdownItem onClick={() => eliminarAvistamiento(avistamiento.id)}>Eliminar</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </div>

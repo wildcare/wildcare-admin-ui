@@ -25,6 +25,12 @@ const AvistamientoCard: React.FC<AvistamientoCardProps> = ({ id, region, nombre,
     const { obtenerTokenLocalStorage } = useAuth();
 
     const editarEstadoAvistamiento = async (estado: string) => {
+
+      if (nombre.toLowerCase() === 'pendiente'){
+        alert('No se puede editar el estado de un avistamiento pendiente ');
+        return;
+      } 
+
       setIsLoading(true);
 
       try {
