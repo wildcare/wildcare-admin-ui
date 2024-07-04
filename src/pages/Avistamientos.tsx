@@ -149,15 +149,18 @@ const Avistamientos: React.FC = () => {
 
   const filteredItems = useMemo(() => {
     let filteredAvistamientos = [...avistamientos];
-
+  
     if (hasSearchFilter) {
-      filteredAvistamientos = filteredAvistamientos.filter((avistamiento) =>
-        avistamiento[selectedValue as keyof Avistamiento].toString().toLowerCase().includes(filterValue.toLowerCase())
-      );
+      filteredAvistamientos = filteredAvistamientos.filter((avistamiento) => {
+        const propertyValue = avistamiento[selectedValue as keyof Avistamiento];
+        // Verificando si la propiedad existe y no es nula antes de convertirla a string.
+        const propertyValueString = propertyValue != null ? propertyValue.toString().toLowerCase() : '';
+        return propertyValueString.includes(filterValue.toLowerCase());
+      });
     }
-
+  
     return filteredAvistamientos;
-  }, [avistamientos, filterValue, hasSearchFilter]);
+  }, [avistamientos, filterValue, hasSearchFilter, selectedValue]);
 
 
   const sortedItems = React.useMemo(() => {
