@@ -12,7 +12,7 @@ interface MapaInfoEspecimenProps {
 function MapaInfoEspecimen({ position }: MapaInfoEspecimenProps) {
   return (
     <>
-      <APIProvider apiKey={'AIzaSyB2kB5gM51fzkKnQlj1QQotbDOnDbz8F38'}>
+      <APIProvider apiKey={'AIzaSyDSAkerSFnBI7OxrI31_4FCoFvlwB0cL1U'}>
         <Map defaultCenter={position} defaultZoom={10}>
           <Marker position={position} />
         </Map>
